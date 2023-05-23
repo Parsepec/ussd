@@ -14,11 +14,12 @@ db.on("ready", () => {
   //     ctx.response.body = "Hello World!";
   //   });
   router.post("/", async (ctx, next) => {
-    ctx.response.body = "Hello World!";
+
     console.log(ctx.request)
     const { value } = ctx.request.body({ type: "json" });
     const { name } = await value;
     console.log(name);
+    ctx.response.body = name;
   });
   const app = new Application();
   const port = 3000;
