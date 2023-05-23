@@ -1,13 +1,13 @@
 import { Application, Router } from "https://deno.land/x/oak/mod.ts";
-import { Database, Table } from "npm:st.db";
-const db = new Database("db.json");
-const router = new Router();
+// import { Database, Table } from "npm:st.db";
+// const db = new Database("db.json");
+// const router = new Router();
 
-db.on("ready", () => {
-  const table_1 = new Table("profile", db);
-  table_1.set("name", "Mohamed Abdelkarim");
-  table_1.set("age", 17);
-});
+// db.on("ready", () => {
+//   const table_1 = new Table("profile", db);
+//   table_1.set("name", "Mohamed Abdelkarim");
+//   table_1.set("age", 17);
+// });
 
 (async () => {
   //   app.use((ctx) => {
