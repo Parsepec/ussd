@@ -16,7 +16,7 @@ const router = new Router();
   //   app.use((ctx) => {
   //     ctx.response.body = "Hello World!";
   //   });
-  router.post("/", async (ctx, next) => {
+  router.add(["POST","GET"],"/", async (ctx, next) => {
 
     console.log(ctx.request.url.searchParams.get("name"));
     const params = ctx.request.url.searchParams;
