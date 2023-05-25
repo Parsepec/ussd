@@ -18,17 +18,20 @@ const router = new Router();
   //   });
   router.add(["POST", "GET"], "/", async (ctx, next) => {
     console.log(ctx.request.url.searchParams.get("name"));
+    if(ctx.request.method == "GET"){
+        ctx.response.body = "Hello"
+    }
     const params = ctx.request.url.searchParams;
     const body = await ctx.request.body().value;
-    const { sessionId, serviceCode, phoneNumber, text } = body;
-    console.log(body);
+    console.log(await ctx.request.body().type);
+    // const { sessionId, serviceCode, phoneNumber, text } = body;
+
+      
     params.forEach((value, key, parent) => {
       console.log(value, key);
     });
 
-    // var text = params.get("text");
-     console.log({ text });
-     if (Boolean(text == "")) {
+     if (Boolean(body.get('text') == "")) {
        console.log("If passed");
        ctx.response.body = "CON Good day";
      }
