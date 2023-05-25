@@ -20,12 +20,12 @@ const router = new Router();
 
     console.log(ctx.request.url.searchParams.get("name"));
     const params = ctx.request.url.searchParams;
-
+    const { sessionId, serviceCode, phoneNumber, text } = ctx.req.body;
     params.forEach((value, key, parent) => {
       console.log(value, key);
     });
 
-    var text = params.get("text");
+    // var text = params.get("text");
     console.log({text})
     if (Boolean(text == "")) {
         console.log("If passed")
