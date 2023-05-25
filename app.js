@@ -1,7 +1,7 @@
 import { Application, Router } from "https://deno.land/x/oak/mod.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { load } from "https://deno.land/std/dotenv/mod.ts";
-
+import { Ngrok } from "https://deno.land/x/ngrok@4.0.1/mod.ts";
 const env = await load();
 const supabaseUrl = "https://recdhklrrpqdbxuanydk.supabase.co";
 const supabaseKey = env["SERVICE_KEY"];
@@ -16,21 +16,22 @@ const router = new Router();
   //   app.use((ctx) => {
   //     ctx.response.body = "Hello World!";
   //   });
-  router.add(["POST","GET"],"/", async (ctx, next) => {
-
+  router.add(["POST", "GET"], "/", async (ctx, next) => {
     console.log(ctx.request.url.searchParams.get("name"));
     const params = ctx.request.url.searchParams;
-    const { sessionId, serviceCode, phoneNumber, text } = ctx.req.body;
+    const body = await ctx.request.body().value;
+    const { sessionId, serviceCode, phoneNumber, text } = body;
+    console.log(body);
     params.forEach((value, key, parent) => {
       console.log(value, key);
     });
 
     // var text = params.get("text");
-    console.log({text})
-    if (Boolean(text == "")) {
-        console.log("If passed")
-        ctx.response.body = "CON Good day";
-      }
+     console.log({ text });
+     if (Boolean(text == "")) {
+       console.log("If passed");
+       ctx.response.body = "CON Good day";
+     }
   });
   const app = new Application();
   const port = 3000;
