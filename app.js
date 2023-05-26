@@ -47,11 +47,11 @@ const router = new Router();
         // console.log("If passed");
         // ctx.response.body = "CON Good day";
       }
-      if (text == "1") {
+      else if(text == "1") {
         ctx.response.body = `CON Enter Name:`;
       }
-      if(/1\*1\*[aA-zZ]/.test(text)){
-        ctx.response.body = `END ${text.match(/1\*1\*[aA-zZ]/)}`
+      else if(/1\*1\*[a-z]*/i.test(text)){
+        ctx.response.body = `END ${text.match(/1\*1\*[a-z]*/i)}`
       }
     }
   });
