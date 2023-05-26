@@ -35,7 +35,7 @@ const router = new Router();
         .select("phone_number");
 
       if (Boolean(text == "")) {
-        if (phoneNumbers.include(body.get("phoneNumber"))) {
+        if (phoneNumbers.includes(body.get("phoneNumber"))) {
           ctx.response.body = `CON Good day 
                                 Welcome back ${phoneNumber}`;
         } else {
