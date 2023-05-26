@@ -18,23 +18,39 @@ const router = new Router();
   //   });
   router.add(["POST", "GET"], "/", async (ctx, next) => {
     console.log(ctx.request.url.searchParams.get("name"));
-    if(ctx.request.method == "GET"){
-        ctx.response.body = "Hello"
-    }else{
-    const params = ctx.request.url.searchParams;
-    const body = await ctx.request.body().value;
-    console.log(await ctx.request.body().type);
-    // const { sessionId, serviceCode, phoneNumber, text } = body;
+    if (ctx.request.method == "GET") {
+      ctx.response.body = "Hello";
+    } else {
+      const params = ctx.request.url.searchParams;
+      const body = await ctx.request.body().value;
+      console.log(await ctx.request.body().type);
+      // const { sessionId, serviceCode, phoneNumber, text } = body;
+      const phoneNumber = body.get("phoneNumber");
+      const text = body.get("text");
+      params.forEach((value, key, parent) => {
+        console.log(value, key);
+      });
+      let { data: phoneNumbers, error } = await supabase
+        .from("account")
+        .select("phone_number");
 
-      
-    params.forEach((value, key, parent) => {
-      console.log(value, key);
-    });
+      if (Boolean(text == "")) {
+        if (phoneNumbers.include(body.get("phoneNumber"))) {
+          ctx.response.body = `CON Good day 
+                                Welcome back ${phoneNumber}`;
+        } else {
+          ctx.response.body = `CON Welcome to 1naira
+                                1. Create an account`;
+        }
+        console.log(phoneNumbers);
 
-     if (Boolean(body.get('text') == "")) {
-       console.log("If passed");
-       ctx.response.body = "CON Good day";
-     }}
+        console.log("If passed");
+        ctx.response.body = "CON Good day";
+      }
+      if (text == "1") {
+        ctx.response.body = `CON Enter Name:`;
+      }
+    }
   });
   const app = new Application();
   const port = 3000;
