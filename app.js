@@ -50,6 +50,9 @@ const router = new Router();
       if (text == "1") {
         ctx.response.body = `CON Enter Name:`;
       }
+      if(/1\*1\*[aA-zZ]/.test(text)){
+        ctx.response.body = `END ${text.match(/1\*1\*[aA-zZ]/)}`
+      }
     }
   });
   const app = new Application();
