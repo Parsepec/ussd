@@ -23,18 +23,14 @@ const router = new Router();
     } else {
       const params = ctx.request.url.searchParams;
       const body = await ctx.request.body().value;
-      console.log(await ctx.request.body().type);
       // const { sessionId, serviceCode, phoneNumber, text } = body;
       const phoneNumber = body.get("phoneNumber");
       const text = body.get("text");
-      params.forEach((value, key, parent) => {
-        console.log(value, key);
-      });
       let { data: phoneNumbers, error } = await supabase
         .from("account")
         .select("phone_number");
 
-      if (Boolean(text == "")) {
+      if (text == "") {
         if (phoneNumbers.includes(body.get("phoneNumber"))) {
           ctx.response.body = `CON Good day 
                                 Welcome back ${phoneNumber}`;
@@ -42,16 +38,16 @@ const router = new Router();
           ctx.response.body = `CON Welcome to 1naira
                                 1. Create an account`;
         }
-        console.log(phoneNumbers);
+        // console.log(phoneNumbers);
 
         // console.log("If passed");
         // ctx.response.body = "CON Good day";
-      }
-      else if(text == "1") {
+      } else if (text == "1") {
         ctx.response.body = `CON Enter Name:`;
-      }
-      else if(/1\*1\*[a-z]*/i.test(text)){
-        ctx.response.body = `END ${text.match(/1\*1\*[a-z]*/i)}`
+      } else if (/1\*1\*[a-z]*/i.test(text)) {
+        ctx.response.body = `END ${
+          text.match(/1\*1\*[a-z]*/i)[0].split("*")[2]
+        }`;
       }
     }
   });
