@@ -44,8 +44,8 @@ const router = new Router();
         }
         console.log(phoneNumbers);
 
-        console.log("If passed");
-        ctx.response.body = "CON Good day";
+        // console.log("If passed");
+        // ctx.response.body = "CON Good day";
       }
       if (text == "1") {
         ctx.response.body = `CON Enter Name:`;
