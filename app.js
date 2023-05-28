@@ -13,35 +13,39 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 // text carries the user response as they use the USSD application
 const router = new Router();
 (async () => {
-  //   app.use((ctx) => {
-  //     ctx.response.body = "Hello World!";
-  //   });
   router.add(["POST", "GET"], "/", async (ctx, next) => {
-    console.log(ctx.request.url.searchParams.get("name"));
+    // console.log(ctx.request.url.searchParams.get("name"));
     if (ctx.request.method == "GET") {
       ctx.response.body = "Hello";
     } else {
       const params = ctx.request.url.searchParams;
       const body = await ctx.request.body().value;
-      // const { sessionId, serviceCode, phoneNumber, text } = body;
-      const phoneNumber = body.get("phoneNumber");
+      const phoneNumber = body.get("phone_number");
       const text = body.get("text");
       let { data: phoneNumbers, error } = await supabase
         .from("account")
         .select("phone_number");
 
       if (text == "") {
-        if (phoneNumbers.includes(body.get("phoneNumber"))) {
+        console.log({ phoneNumbers, phoneNumber });
+        if (
+          phoneNumbers.filter((number) => number.phone_number == phoneNumber)
+        ) {
           ctx.response.body = `CON Good day 
-                                Welcome back ${phoneNumber}`;
+                                Welcome back ${phoneNumber}, what would you like to do today?
+                                1. Transfer Money
+                                2. Check balance
+                                3. Pay Bills
+                                4. Settings`;
         } else {
           ctx.response.body = `CON Welcome to 1naira
                                 1. Create an account`;
         }
         // console.log(phoneNumbers);
-
-        // console.log("If passed");
-        // ctx.response.body = "CON Good day";
+      } else if (
+        text == "1" &&
+        phoneNumbers.filter((number) => number.phone_number == phoneNumber)
+      ) {
       } else if (text == "1") {
         ctx.response.body = `CON Enter Name:`;
       } else if (/1\*1\*[a-z]*/i.test(text)) {
@@ -51,8 +55,21 @@ const router = new Router();
       }
     }
   });
+  router.post("/addUser", async (ctx) => {
+    const { name, phone_number, balance } = await ctx.request.body().value;
+    const { data, error } = await supabase
+      .from("account")
+      .insert([{ name, phone_number, balance }]);
+    // let { data: account, error } = await supabase.from("account").select("*");
+    console.log({ data, error });
+  });
+
+  router.get("getAll", async (ctx) => {
+    let { data: account, error } = await supabase.from("account").select("*");
+    console.log({ account });
+  });
   const app = new Application();
-  const port = 3000;
+  const port = 3002;
   app.use(router.routes());
   app.use(router.allowedMethods());
   app.addEventListener("listen", () => {
