@@ -21,6 +21,10 @@ const router = new Router();
       const params = ctx.request.url.searchParams;
       const body = await ctx.request.body().value;
       const phoneNumber = String(body.get("phone_number"));
+      console.log(phoneNumber)
+      body.forEach((value, key, parent) => {
+        console.log(value, key);
+      });
       const text = body.get("text");
       let { data: phoneNumbers, error } = await supabase
         .from("account")
@@ -39,7 +43,7 @@ const router = new Router();
                                 2. Check balance
                                 3. Pay Bills
                                 4. Fund Account
-                                4. Settings`;
+                                5. Settings`;
         } else {
           ctx.response.body = `CON Welcome to 1naira
                                 1. Create an account`;
