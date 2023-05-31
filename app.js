@@ -20,7 +20,7 @@ const router = new Router();
     } else {
       const params = ctx.request.url.searchParams;
       const body = await ctx.request.body().value;
-      const phoneNumber = String(body.get("phone_number"));
+      const phoneNumber = String(body.get("phoneNumber"));
       console.log(phoneNumber)
       body.forEach((value, key, parent) => {
         console.log(value, key);
