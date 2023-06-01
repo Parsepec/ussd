@@ -31,9 +31,9 @@ const router = new Router();
         .select("phone_number");
       console.log(phoneNumbers);
       const isResgistered = Boolean(
-        phoneNumbers.filter((number) => number.phone_number == phoneNumber)
+        phoneNumbers.filter((number) => number.phone_number == phoneNumber).length
       );
-
+        console.log({isResgistered})
       if (text == "") {
         console.log({ phoneNumbers, phoneNumber });
         if (isResgistered) {
