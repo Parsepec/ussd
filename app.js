@@ -82,11 +82,11 @@ const router = new Router();
       } else if ( text.split('*')[2] >= 9 && text.split('*').length <= 3 && isResgistered) {
         ctx.response.body = `CON Confirm Account Number
                               ${
-                                text.match(/1\*1\*[0-9]{9}/i)[0].split("*")[2]
+                                text.split("*")[2]
                               }
                               1. Continue`;
       }
-      else if (/1\*1\*[0-9]{10}\*1/i.test(text) && isResgistered) {
+      else if (/1\*1\*[0-9]{10}\*1/i.test(text) && text.split('*').length < 5 && isResgistered) {
         ctx.response.body= `CON Enter amount to send`
       } 
       else if (/1\*1\*[0-9]{10}\*1\*[0-9]{2}/i.test(text) && text.split('*').length < 6 && isResgistered) {
