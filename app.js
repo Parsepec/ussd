@@ -86,10 +86,10 @@ const router = new Router();
                               }
                               1. Continue`;
       }
-      else if (/1\*1\*[0-9]{9}\*1/i.test(text) && isResgistered) {
+      else if (/1\*1\*[0-9]{10}\*1/i.test(text) && isResgistered) {
         ctx.response.body= `CON Enter amount to send`
       } 
-      else if (/1\*1\*[0-9]{11}\*1\*[0-9]{2}/i.test(text) && text.split('*').length < 6 && isResgistered) {
+      else if (/1\*1\*[0-9]{10}\*1\*[0-9]{2}/i.test(text) && text.split('*').length < 6 && isResgistered) {
         ctx.response.body = `CON Enter Pin to send ${text.split('*')[4]} to ${text.split('*')[2]}`
         // console.log(`Sent ${text.split('*')[4]} to ${text.split('*')[2]}`)
       }
