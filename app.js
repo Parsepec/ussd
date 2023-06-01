@@ -17,11 +17,12 @@ const router = new Router();
     // console.log(ctx.request.url.searchParams.get("name"));
     if (ctx.request.method == "GET") {
       ctx.response.body = "Hello";
+
     } else {
       const params = ctx.request.url.searchParams;
       const body = await ctx.request.body().value;
       const phoneNumber = String(body.get("phoneNumber"));
-      console.log(phoneNumber)
+      console.log({phoneNumber : phoneNumber.slice(-10)})
       body.forEach((value, key, parent) => {
         console.log(value, key);
       });
@@ -31,7 +32,7 @@ const router = new Router();
         .select("phone_number");
       console.log(phoneNumbers);
       const isResgistered = Boolean(
-        phoneNumbers.filter((number) => number.phone_number == phoneNumber).length
+        phoneNumbers.filter((number) => number.phone_number.slice(-10) == phoneNumber.slice(-10)).length
       );
         console.log({isResgistered})
       if (text == "") {
@@ -81,7 +82,7 @@ const router = new Router();
           const { data, error } = await supabase
             .from("account")
             .update({ pin: text.split("*")[4] })
-            .eq("phone_number", phoneNumber);
+            .eq("phone_number", phoneNumber.slice(-10));
             console.log({data,error})
           ctx.response.body = `CON Pin saved`;
         } else {
@@ -111,7 +112,7 @@ const router = new Router();
         const { data: pin, error } = await supabase
         .from("account")
         .select("pin")
-        .eq("phone_number", phoneNumber);
+        .eq("phone_number", phoneNumber.slice(-10));
         if(text.split("*")[5] == String(pin[0].pin)){
           console.log('sending')
         }else{
@@ -133,6 +134,15 @@ const router = new Router();
     const { data, error } = await supabase
       .from("account")
       .insert([{ name, phone_number, balance }]);
+    // let { data: account, error } = await supabase.from("account").select("*");
+    console.log({ data, error });
+  });
+  router.post("/updateUser", async (ctx) => {
+    const { name, phone_number} = await ctx.request.body().value;
+    const { data, error } = await supabase
+    .from('account')
+    .update({ phone_number: phone_number })
+    .eq('name', name)
     // let { data: account, error } = await supabase.from("account").select("*");
     console.log({ data, error });
   });
