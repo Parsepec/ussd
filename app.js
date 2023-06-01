@@ -61,7 +61,7 @@ const router = new Router();
         const { data: pin, error } = await supabase
           .from("account")
           .select("pin")
-          .eq("phone_number", phoneNumber);
+          .eq("phone_number", phoneNumber.slice(-10));
 
         console.log({ pin: pin[0].pin, error });
         //Check if pin exists
