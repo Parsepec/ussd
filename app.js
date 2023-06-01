@@ -73,21 +73,6 @@ const router = new Router();
                                  
         `;
         }
-      } else if (
-        text.split("*")[3].length == 4 &&
-        text.split("*").length >= 5 &&
-        isResgistered
-      ) {
-        if (text.split("*")[3] == text.split("*")[4]) {
-          const { data, error } = await supabase
-            .from("account")
-            .update({ pin: text.split("*")[4] })
-            .eq("phone_number", phoneNumber.slice(-10));
-            console.log({data,error})
-          ctx.response.body = `CON Pin saved`;
-        } else {
-          ctx.response.body = `Pins don't match`;
-        }
       } else if (text == "1*1*1" && isResgistered) {
         //Choose pin
         ctx.response.body = `CON Choose 4 Digit Pin`;
@@ -117,6 +102,22 @@ const router = new Router();
           console.log('sending')
         }else{
           console.log('Wrong Pin')
+        }
+      }
+      else if (
+        text.split("*").length >= 5 &&
+        text.split("*")[3].length == 4 &&
+        isResgistered
+      ) {
+        if (text.split("*")[3] == text.split("*")[4]) {
+          const { data, error } = await supabase
+            .from("account")
+            .update({ pin: text.split("*")[4] })
+            .eq("phone_number", phoneNumber.slice(-10));
+            console.log({data,error})
+          ctx.response.body = `CON Pin saved`;
+        } else {
+          ctx.response.body = `Pins don't match`;
         }
       }
       else if (text == "1") {
