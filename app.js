@@ -62,7 +62,7 @@ const router = new Router();
           .select("balance")
           .eq("phone_number", phoneNumber.slice(-10));
           const bal = balance[0].balance
-        console.log(balance)
+        console.log(bal)
           ctx.response.body = `Your balance is ${bal}`
       } else if (text == "1*1" && isResgistered) {
         // Transfer Funds
