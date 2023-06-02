@@ -67,7 +67,7 @@ const router = new Router();
         //Check if pin exists
         if (pin[0].pin === null) {
           ctx.response.body = `CON You are yet to create a pin
-                                1. Create pin`;
+                                1. Continue to pin create`;
         } else {
           ctx.response.body = `CON Enter account Number
                                  
@@ -99,7 +99,7 @@ const router = new Router();
         .select("pin")
         .eq("phone_number", phoneNumber.slice(-10));
         if(text.split("*")[5] == String(pin[0].pin)){
-          console.log('sending')
+          console.log('sending')       
         }else{
           console.log('Wrong Pin')
         }
@@ -118,7 +118,7 @@ const router = new Router();
             console.log({data,error})
           ctx.response.body = `CON Pin saved`;
         } else {
-          ctx.response.body = `Pins don't match`;
+          ctx.response.body = `END Pins don't match`;
         }
       }
       else if (text == "1") {
