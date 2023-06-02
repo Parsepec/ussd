@@ -17,12 +17,11 @@ const router = new Router();
     // console.log(ctx.request.url.searchParams.get("name"));
     if (ctx.request.method == "GET") {
       ctx.response.body = "Hello";
-
     } else {
       const params = ctx.request.url.searchParams;
       const body = await ctx.request.body().value;
       const phoneNumber = String(body.get("phoneNumber"));
-      console.log({phoneNumber : phoneNumber.slice(-10)})
+      console.log({ phoneNumber: phoneNumber.slice(-10) });
       body.forEach((value, key, parent) => {
         console.log(value, key);
       });
@@ -32,9 +31,11 @@ const router = new Router();
         .select("phone_number");
       console.log(phoneNumbers);
       const isResgistered = Boolean(
-        phoneNumbers.filter((number) => number.phone_number.slice(-10) == phoneNumber.slice(-10)).length
+        phoneNumbers.filter(
+          (number) => number.phone_number.slice(-10) == phoneNumber.slice(-10)
+        ).length
       );
-        console.log({isResgistered})
+      console.log({ isResgistered });
       if (text == "") {
         console.log({ phoneNumbers, phoneNumber });
         if (isResgistered) {
@@ -55,6 +56,14 @@ const router = new Router();
         ctx.response.body = `CON Transfer to
                               1. One Naira Account
                               2. Other Bank Account`;
+      } else if (text == "2") {
+        const { data: balance, error } = await supabase
+          .from("account")
+          .select("balance")
+          .eq("phone_number", phoneNumber.slice(-10));
+          const bal = balance[0].balance
+        console.log(balance)
+          ctx.response.body = `Your balance is ${bal}`
       } else if (text == "1*1" && isResgistered) {
         // Transfer Funds
         // Select current users pin
@@ -76,35 +85,51 @@ const router = new Router();
       } else if (text == "1*1*1" && isResgistered) {
         //Choose pin
         ctx.response.body = `CON Choose 4 Digit Pin`;
-      } else if (/1\*1\*1\*[0-9]{4}/i.test(text) && text.split("*").length == 4 && isResgistered) {
+      } else if (
+        /1\*1\*1\*[0-9]{4}/i.test(text) &&
+        text.split("*").length == 4 &&
+        isResgistered
+      ) {
         ctx.response.body = `CON Type pin again`;
         // /1\*1\*[0-9]{9}/i.test(text)
-      } else if ( text.split('*')[2] >= 9 && text.split('*').length <= 3 && isResgistered) {
+      } else if (
+        text.split("*")[2] >= 9 &&
+        text.split("*").length <= 3 &&
+        isResgistered
+      ) {
         ctx.response.body = `CON Confirm Account Number
-                              ${
-                                text.split("*")[2]
-                              }
+                              ${text.split("*")[2]}
                               1. Continue`;
-      }
-      else if (/1\*1\*[0-9]{10}\*1/i.test(text) && text.split('*').length < 5 && isResgistered) {
-        ctx.response.body= `CON Enter amount to send`
-      } 
-      else if (/1\*1\*[0-9]{10}\*1\*[0-9]{2}/i.test(text) && text.split('*').length < 6 && isResgistered) {
-        ctx.response.body = `CON Enter Pin to send ${text.split('*')[4]} to ${text.split('*')[2]}`
+      } else if (
+        /1\*1\*[0-9]{10}\*1/i.test(text) &&
+        text.split("*").length < 5 &&
+        isResgistered
+      ) {
+        ctx.response.body = `CON Enter amount to send`;
+      } else if (
+        /1\*1\*[0-9]{10}\*1\*[0-9]{2}/i.test(text) &&
+        text.split("*").length < 6 &&
+        isResgistered
+      ) {
+        ctx.response.body = `CON Enter Pin to send ${text.split("*")[4]} to ${
+          text.split("*")[2]
+        }`;
         // console.log(`Sent ${text.split('*')[4]} to ${text.split('*')[2]}`)
-      }
-      else if (/1\*1\*[0-9]{11}\*1\*[0-9]{2}/i.test(text) && text.split('*').length >= 6 && isResgistered) {
+      } else if (
+        /1\*1\*[0-9]{11}\*1\*[0-9]{2}/i.test(text) &&
+        text.split("*").length >= 6 &&
+        isResgistered
+      ) {
         const { data: pin, error } = await supabase
-        .from("account")
-        .select("pin")
-        .eq("phone_number", phoneNumber.slice(-10));
-        if(text.split("*")[5] == String(pin[0].pin)){
-          console.log('sending')       
-        }else{
-          console.log('Wrong Pin')
+          .from("account")
+          .select("pin")
+          .eq("phone_number", phoneNumber.slice(-10));
+        if (text.split("*")[5] == String(pin[0].pin)) {
+          console.log("sending");
+        } else {
+          console.log("Wrong Pin");
         }
-      }
-      else if (
+      } else if (
         /1\*1\*1\*[0-9]{4}\*[0-9]{4}/i.test(text) &&
         text.split("*").length >= 5 &&
         text.split("*")[3].length == 4 &&
@@ -115,13 +140,12 @@ const router = new Router();
             .from("account")
             .update({ pin: text.split("*")[4] })
             .eq("phone_number", phoneNumber.slice(-10));
-            console.log({data,error})
+          console.log({ data, error });
           ctx.response.body = `CON Pin saved`;
         } else {
           ctx.response.body = `END Pins don't match`;
         }
-      }
-      else if (text == "1") {
+      } else if (text == "1") {
         ctx.response.body = `CON Enter Name:`;
       } else if (
         text == "1*1" &&
@@ -140,11 +164,11 @@ const router = new Router();
     console.log({ data, error });
   });
   router.post("/updateUser", async (ctx) => {
-    const { name, phone_number} = await ctx.request.body().value;
+    const { name, phone_number, pin } = await ctx.request.body().value;
     const { data, error } = await supabase
-    .from('account')
-    .update({ phone_number: phone_number })
-    .eq('name', name)
+      .from("account")
+      .update({ pin: pin })
+      .eq("name", name);
     // let { data: account, error } = await supabase.from("account").select("*");
     console.log({ data, error });
   });
