@@ -28,7 +28,7 @@ const router = new Router();
       const text = body.get("text");
       let { data: phoneNumbers, error } = await supabase
         .from("account")
-        .select("phone_number");
+        .select("phone_number,name");
       console.log(phoneNumbers);
       const isResgistered = Boolean(
         phoneNumbers.filter(
@@ -38,9 +38,13 @@ const router = new Router();
       console.log({ isResgistered });
       if (text == "") {
         console.log({ phoneNumbers, phoneNumber });
+        const { data: name, error } = await supabase
+        .from("account")
+        .select("name")
+        .eq("phone_number", phoneNumber.slice(-10));
         if (isResgistered) {
           ctx.response.body = `CON Good day 
-                                Welcome back ${phoneNumber}, what would you like to do today?
+                                Welcome back ${name[0].name}, what would you like to do today?
                                 1. Transfer Money
                                 2. Check balance
                                 3. Pay Bills
@@ -61,9 +65,9 @@ const router = new Router();
           .from("account")
           .select("balance")
           .eq("phone_number", phoneNumber.slice(-10));
-          const bal = balance[0].balance
-        console.log(bal)
-          ctx.response.body = `Your balance is ${bal}`
+        const bal = balance[0].balance;
+        console.log(bal);
+        ctx.response.body = `END Your balance is ${bal}`;
       } else if (text == "1*1" && isResgistered) {
         // Transfer Funds
         // Select current users pin
@@ -82,7 +86,21 @@ const router = new Router();
                                  
         `;
         }
-      } else if (text == "1*1*1" && isResgistered) {
+      } 
+      else if(text.split('*')[text.split('*').length - 1] == '00'){
+        const { data: name, error } = await supabase
+        .from("account")
+        .select("name")
+        .eq("phone_number", phoneNumber.slice(-10));
+        ctx.response.body = `CON Good day 
+                                Welcome back ${name}, what would you like to do today?
+                                1. Transfer Money
+                                2. Check balance
+                                3. Pay Bills
+                                4. Fund Account
+                                5. Settings`;
+      }
+      else if (text == "1*1*1" && isResgistered) {
         //Choose pin
         ctx.response.body = `CON Choose 4 Digit Pin`;
       } else if (
@@ -105,7 +123,16 @@ const router = new Router();
         text.split("*").length < 5 &&
         isResgistered
       ) {
-        ctx.response.body = `CON Enter amount to send`;
+        if (
+          phoneNumbers.filter(
+            (number) => number.phone_number.slice(-10) == text.split("*")[2]
+          ).length
+        ) {
+          ctx.response.body = `CON Enter amount to send`;
+        }else{
+          ctx.response.body = `CON Invalid account number
+                                00. Main Menu`;
+        }
       } else if (
         /1\*1\*[0-9]{10}\*1\*[0-9]{2}/i.test(text) &&
         text.split("*").length < 6 &&
