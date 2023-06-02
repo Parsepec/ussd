@@ -66,7 +66,7 @@ const router = new Router();
         console.log({ pin: pin[0].pin, error });
         //Check if pin exists
         if (pin[0].pin === null) {
-          ctx.response.body = `CON Create a pin
+          ctx.response.body = `CON You are yet to create a pin
                                 1. Create pin`;
         } else {
           ctx.response.body = `CON Enter account Number
@@ -76,7 +76,7 @@ const router = new Router();
       } else if (text == "1*1*1" && isResgistered) {
         //Choose pin
         ctx.response.body = `CON Choose 4 Digit Pin`;
-      } else if (/1\*1\*1\*[0-9]{4}/i.test(text) && isResgistered) {
+      } else if (/1\*1\*1\*[0-9]{4}/i.test(text) && text.split("*").length == 4 && isResgistered) {
         ctx.response.body = `CON Type pin again`;
         // /1\*1\*[0-9]{9}/i.test(text)
       } else if ( text.split('*')[2] >= 9 && text.split('*').length <= 3 && isResgistered) {
@@ -105,6 +105,7 @@ const router = new Router();
         }
       }
       else if (
+        /1\*1\*1\*[0-9]{4}\*[0-9]{4}/i.test(text) &&
         text.split("*").length >= 5 &&
         text.split("*")[3].length == 4 &&
         isResgistered
