@@ -67,7 +67,7 @@ const router = new Router();
           .eq("phone_number", phoneNumber.slice(-10));
         const bal = balance[0].balance;
         console.log(bal);
-        ctx.response.body = `END Your balance is ${bal}`;
+        ctx.response.body = `END Your balance is ₦${bal}`;
       } else if (text == "1*1" && isResgistered) {
         // Transfer Funds
         // Select current users pin
@@ -92,8 +92,7 @@ const router = new Router();
         .from("account")
         .select("name")
         .eq("phone_number", phoneNumber.slice(-10));
-        ctx.response.body = `CON Good day 
-                                Welcome back ${name}, what would you like to do today?
+        ctx.response.body = `CON Welcome back ${name}, what would you like to do today?
                                 1. Transfer Money
                                 2. Check balance
                                 3. Pay Bills
@@ -143,7 +142,7 @@ const router = new Router();
         }`;
         // console.log(`Sent ${text.split('*')[4]} to ${text.split('*')[2]}`)
       } else if (
-        /1\*1\*[0-9]{11}\*1\*[0-9]{2}/i.test(text) &&
+        /1\*1\*[0-9]{10}\*1\*[0-9]{2}/i.test(text) &&
         text.split("*").length >= 6 &&
         isResgistered
       ) {
