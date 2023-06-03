@@ -165,7 +165,7 @@ const router = new Router();
           const { data, error } = await supabase
             .from("account")
             .update({ balance: senderBalance[0].balance - Number(text.split("*")[4]) })
-            .eq("phone_number", text.split("*")[2]);
+            .eq("phone_number", phoneNumber.slice(-10));
           const { data:updateAccount, err } = await supabase
             .from("account")
             .update({ balance: receiverBalance[0].balance + Number(text.split("*")[4])  })
