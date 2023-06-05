@@ -66,7 +66,7 @@ const router = new Router();
           .eq("phone_number", phoneNumber.slice(-10));
         const bal = balance[0].balance;
         console.log(bal);
-        ctx.response.body = `END Your balance is ₦${bal}`;
+        ctx.response.body = `END Your 1Naira Account balance is ₦${bal}.00`;
       } else if (text == "1*1" && isResgistered) {
         // Transfer Funds
         // Select current users pin
@@ -116,9 +116,15 @@ const router = new Router();
             (number) => number.phone_number.slice(-10) == text.split("*")[2]
           ).length
         ) {
-          ctx.response.body = `CON Confirm Account Number
+          const { data: name, error } = await supabase
+          .from("account")
+          .select("name")
+          .eq("phone_number", text.split("*")[2]);
+          ctx.response.body = `CON Are the account details correct?
+          ${name[0].name}
           ${text.split("*")[2]}
-          1. Continue`;
+          1. Yes
+          2. No`;
         } else {
           ctx.response.body = `CON Invalid account number
           00. Main Menu`;
@@ -151,9 +157,14 @@ const router = new Router();
           .from("account")
           .select("balance")
           .eq("phone_number", phoneNumber.slice(-10));
+
         const { data: receiverBalance, error: rBalErr } = await supabase
           .from("account")
           .select("balance")
+          .eq("phone_number", text.split("*")[2]);
+        const { data: receiverName, error: rNameErr } = await supabase
+          .from("account")
+          .select("name")
           .eq("phone_number", text.split("*")[2]);
 
         const { data: pin, error } = await supabase
@@ -164,16 +175,29 @@ const router = new Router();
         if (text.split("*")[5] == String(pin[0].pin)) {
           const { data, error } = await supabase
             .from("account")
-            .update({ balance: senderBalance[0].balance - Number(text.split("*")[4]) })
+            .update({
+              balance: senderBalance[0].balance - Number(text.split("*")[4]),
+            })
             .eq("phone_number", phoneNumber.slice(-10));
-          const { data:updateAccount, err } = await supabase
+          const { data: updateAccount, err } = await supabase
             .from("account")
-            .update({ balance: receiverBalance[0].balance + Number(text.split("*")[4])  })
+            .update({
+              balance: receiverBalance[0].balance + Number(text.split("*")[4]),
+            })
             .eq("phone_number", text.split("*")[2]);
-
-          ctx.response.body = `END Sent ₦${ text.split("*")[4]} to ${text.split("*")[2]}`
+          // You sent [Amount] to [Full Name]. Your new balance is
+          const { data: receiverBalanceUp, error: rBalErr } = await supabase
+            .from("account")
+            .select("balance")
+            .eq("phone_number", text.split("*")[2]);
+          ctx.response.body = `END You Sent ₦${
+            text.split("*")[4]
+          }.00 to ${receiverName} ${
+            text.split("*")[2]
+          }. Your new balance is ₦${receiverBalanceUp}.00`;
           console.log("sending");
         } else {
+          ctx.response.body = `END Wrong Pin`;
           console.log("Wrong Pin");
         }
       } else if (
@@ -207,7 +231,6 @@ const router = new Router();
     const { data, error } = await supabase
       .from("account")
       .insert([{ name, phone_number, balance }]);
-    // let { data: account, error } = await supabase.from("account").select("*");
     console.log({ data, error });
   });
   router.post("/updateUser", async (ctx) => {
@@ -216,7 +239,6 @@ const router = new Router();
       .from("account")
       .update({ balance: balance + 1000 })
       .eq("name", name);
-    // let { data: account, error } = await supabase.from("account").select("*");
     console.log({ data, error });
   });
 
