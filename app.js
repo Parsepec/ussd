@@ -240,8 +240,8 @@ const router = new Router();
           .from("account")
           .select("pin")
           .eq("phone_number", phoneNumber.slice(-10));
+          if (text.split("*")[5] == String(pin[0].pin)) {8167000004
 
-        if (text.split("*")[5] == String(pin[0].pin)) {
           const { data, error } = await supabase
             .from("account")
             .update({
@@ -263,7 +263,7 @@ const router = new Router();
             text.split("*")[4]
           }.00 to ${receiverName[0].name} ${
             text.split("*")[2]
-          }. Your new balance is ₦${senderBalanceUpBalanceUp[0].balance}.00`;
+          }. Your new balance is ₦${senderBalanceUp[0].balance}.00`;
           console.log("sending");
         } else {
           ctx.response.body = `END Wrong Pin`;
