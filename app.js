@@ -44,11 +44,13 @@ const router = new Router();
           .eq("phone_number", phoneNumber.slice(-10));
         if (isResgistered) {
           ctx.response.body = `CON Welcome back ${name[0].name}, what would you like to do today?
+          
                                 1. Transfer Money
                                 2. Check balance
-                                3. Pay Bills
-                                4. Fund Account
-                                5. Settings`;
+                                3. Airtime / Data
+                                4. Pay Bills
+                                5. Fund Account
+                                6. Settings`;
         } else {
           ctx.response.body = `CON Welcome to 1naira
                                 1. Create an account`;
@@ -67,7 +69,64 @@ const router = new Router();
         const bal = balance[0].balance;
         console.log(bal);
         ctx.response.body = `END Your 1Naira Account balance is ₦${bal}.00`;
-      } else if (text == "1*1" && isResgistered) {
+      } else if (text == "3") {
+        ctx.response.body = `CON 
+                            1. Buy Airtime
+                            2. Buy Data`;
+      } else if (text == "5") {
+        ctx.response.body = `CON Select Funding Method
+        1. Recharge card
+        2. Bank Transfer
+        00. Main Menu`;
+      } else if (text == "6") {
+        ctx.response.body = `CON 
+                            1. Change pin
+                            2. Change Language
+                            00. Main Menu`;
+      } else if (text == "6*1") {
+        ctx.response.body = `CON Enter old pin
+`;
+      } 
+      else if(/6\*1\*[0-9]{4}/i.test(text)){
+        const { data: pin, error } = await supabase
+        .from("account")
+        .select("pin")
+        .eq("phone_number", phoneNumber.slice(-10));
+
+      console.log({ pin: pin[0].pin, error });
+      //Check if pin exists
+      if (pin[0].pin === text.split('*')[2]) {
+        ctx.response.body = `CON Enter new Pin
+                              `;
+      } else {
+        ctx.response.body = `END Incorrect Pin
+                               
+      `;
+      }
+      }
+      else if(/6\*1\*[0-9]{4}\*[0-9]{4}/i.test(text)){
+      //Check if pin exists
+        ctx.response.body = `CON Enter New Pin again
+                              `;
+      
+      }
+      else if(/6\*1\*[0-9]{4}\*[0-9]{4}\*[0-9]{4}/i.test(text)){
+        //Check if pin exists
+          if(text.split('*')[3] == text.split('*')[4]){
+            const { data, error } = await supabase
+            .from("account")
+            .update({ pin: text.split("*")[4] })
+            .eq("phone_number", phoneNumber.slice(-10));
+            ctx.response.body = `END Pin Updated
+            `;
+          }else{
+            ctx.response.body = `END Pins don't match
+            `;
+          }
+
+        
+        }
+      else if (text == "1*1" && isResgistered) {
         // Transfer Funds
         // Select current users pin
         const { data: pin, error } = await supabase
@@ -90,7 +149,7 @@ const router = new Router();
           .from("account")
           .select("name")
           .eq("phone_number", phoneNumber.slice(-10));
-        ctx.response.body = `CON Welcome back ${name}, what would you like to do today?
+        ctx.response.body = `CON Welcome back ${name[0].name}, what would you like to do today?
                                 1. Transfer Money
                                 2. Check balance
                                 3. Pay Bills
@@ -117,9 +176,9 @@ const router = new Router();
           ).length
         ) {
           const { data: name, error } = await supabase
-          .from("account")
-          .select("name")
-          .eq("phone_number", text.split("*")[2]);
+            .from("account")
+            .select("name")
+            .eq("phone_number", text.split("*")[2]);
           ctx.response.body = `CON Are the account details correct?
           ${name[0].name}
           ${text.split("*")[2]}
@@ -140,13 +199,23 @@ const router = new Router();
         text.split("*").length < 6 &&
         isResgistered
       ) {
-        const { data: name, error } = await supabase
+        const { data: balance, bError } = await supabase
           .from("account")
-          .select("name")
+          .select("balance")
           .eq("phone_number", phoneNumber.slice(-10));
-        ctx.response.body = `CON Enter Pin to send ₦${
-          text.split("*")[4]
-        } to ${name}   ${text.split("*")[2]}`;
+        console.log(balance[0].balance);
+        if (balance[0].balance >= Number(text.split("*")[4])) {
+          const { data: name, error } = await supabase
+            .from("account")
+            .select("name")
+            .eq("phone_number", phoneNumber.slice(-10));
+          ctx.response.body = `CON Enter Pin to send ₦${
+            text.split("*")[4]
+          } to ${name[0].name} ${text.split("*")[2]}`;
+        } else {
+          ctx.response.body = `END Insufficient funds`;
+        }
+
         // console.log(`Sent ${text.split('*')[4]} to ${text.split('*')[2]}`)
       } else if (
         /1\*1\*[0-9]{10}\*1\*[0-9]{2}/i.test(text) &&
@@ -247,7 +316,7 @@ const router = new Router();
     console.log({ account });
   });
   const app = new Application();
-  const port = 3002;
+  const port = 3005;
   app.use(router.routes());
   app.use(router.allowedMethods());
   app.addEventListener("listen", () => {
