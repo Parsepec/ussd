@@ -208,7 +208,7 @@ const router = new Router();
           const { data: name, error } = await supabase
             .from("account")
             .select("name")
-            .eq("phone_number", phoneNumber.slice(-10));
+            .eq("phone_number", text.split("*")[2]);
           ctx.response.body = `CON Enter Pin to send ₦${
             text.split("*")[4]
           } to ${name[0].name} ${text.split("*")[2]}`;
@@ -261,9 +261,9 @@ const router = new Router();
             .eq("phone_number", text.split("*")[2]);
           ctx.response.body = `END You Sent ₦${
             text.split("*")[4]
-          }.00 to ${receiverName} ${
+          }.00 to ${receiverName[0].name} ${
             text.split("*")[2]
-          }. Your new balance is ₦${receiverBalanceUp}.00`;
+          }. Your new balance is ₦${receiverBalanceUp[0].balance}.00`;
           console.log("sending");
         } else {
           ctx.response.body = `END Wrong Pin`;
