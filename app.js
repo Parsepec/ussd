@@ -255,15 +255,15 @@ const router = new Router();
             })
             .eq("phone_number", text.split("*")[2]);
           // You sent [Amount] to [Full Name]. Your new balance is
-          const { data: receiverBalanceUp, error: rBalErr } = await supabase
+          const { data: senderBalanceUp, error: rBalErr } = await supabase
             .from("account")
             .select("balance")
-            .eq("phone_number", text.split("*")[2]);
+            .eq("phone_number", phoneNumber.slice(-10));
           ctx.response.body = `END You Sent ₦${
             text.split("*")[4]
           }.00 to ${receiverName[0].name} ${
             text.split("*")[2]
-          }. Your new balance is ₦${receiverBalanceUp[0].balance}.00`;
+          }. Your new balance is ₦${senderBalanceUpBalanceUp[0].balance}.00`;
           console.log("sending");
         } else {
           ctx.response.body = `END Wrong Pin`;
@@ -306,8 +306,8 @@ const router = new Router();
     const { name, phone_number, pin } = await ctx.request.body().value;
     const { data, error } = await supabase
       .from("account")
-      .update({ balance: balance + 1000 })
-      .eq("name", name);
+      .update({ name: name })
+      .eq("phone_number", phone_number);
     console.log({ data, error });
   });
 
