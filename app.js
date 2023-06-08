@@ -104,7 +104,7 @@ const router = new Router();
       `;
       }
       }
-      else if(/6\*1\*[0-9]{4}\*[0-9]{4}/i.test(text)){
+      else if(/6\*1\*[0-9]{4}\*[0-9]{4}/i.test(text) && text.split('*').length <= 4){
       //Check if pin exists
         ctx.response.body = `CON Enter New Pin again
                               `;
