@@ -87,7 +87,7 @@ const router = new Router();
         ctx.response.body = `CON Enter old pin
 `;
       } 
-      else if(/6\*1\*[0-9]{4}/i.test(text)){
+      else if(/6\*1\*[0-9]{4}/i.test(text) && text.split('*').length <= 2){
         const { data: pin, error } = await supabase
         .from("account")
         .select("pin")
