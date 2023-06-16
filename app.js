@@ -310,7 +310,9 @@ const router = new Router();
       .eq("phone_number", phone_number);
     console.log({ data, error });
   });
-
+  router.get("/sendSMS", async(ctx)=>{
+    ctx.response.body = 'SMS sent'
+  })
   router.get("/getAll", async (ctx) => {
     let { data: account, error } = await supabase.from("account").select("*");
     console.log({ account });
