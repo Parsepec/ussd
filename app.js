@@ -1,10 +1,15 @@
 import { Application, Router } from "https://deno.land/x/oak/mod.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { load } from "https://deno.land/std/dotenv/mod.ts";
+import * as base64 from "https://denopkg.com/chiefbiiko/base64/mod.ts";
+
 import { Ngrok } from "https://deno.land/x/ngrok@4.0.1/mod.ts";
 const env = await load();
 const supabaseUrl = "https://recdhklrrpqdbxuanydk.supabase.co";
 const supabaseKey = env["SERVICE_KEY"];
+const accountSid= env["TWILIO_ACCOUNT_SID"];
+const authToken = env["TWILIO_AUTH_TOKEN"];
+
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 // session_id gets a unique session ID
@@ -12,6 +17,42 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 // phone_number gets the phone number thats currently accessing the USSD
 // text carries the user response as they use the USSD application
 const router = new Router();
+const sendTextMessage = async (
+  messageBody,
+  accountSid,
+  authToken,
+  fromNumber,
+  toNumber,
+) => {
+  if (!accountSid || !authToken) {
+    console.log(
+      "Your Twilio account credentials are missing. Please add them.",
+    );
+    return;
+  }
+  const url =
+    `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`;
+
+  const encodedCredentials = base64.fromUint8Array(
+    new TextEncoder().encode(`${accountSid}:${authToken}`),
+  );
+  const body = new URLSearchParams({
+    To: toNumber,
+    From: fromNumber,
+    Body: messageBody,
+  });
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Authorization": `Basic ${encodedCredentials}`,
+    },
+    body,
+  });
+  return response.json();
+};
+
 (async () => {
   router.add(["POST", "GET"], "/", async (ctx, next) => {
     // console.log(ctx.request.url.searchParams.get("name"));
@@ -307,9 +348,22 @@ const router = new Router();
       .eq("phone_number", phone_number);
     console.log({ data, error });
   });
-  router.get("/sendSMS", async (ctx) => {
-    ctx.response.type = "application/json";
-    ctx.response.body = { test: 1 };
+  router.post("/sendSMS", async (ctx) => {
+    const fromNumber = `+14026966860`
+    const toNumber = `+2348148882021`
+    const bod = await ctx.request.body().value
+
+     const response = await sendTextMessage(
+       bod.message,
+       accountSid,
+       authToken,
+       fromNumber,
+       toNumber,
+     );
+     ctx.response.type = "application/json";
+     ctx.response.body = { response:response.status };
+    console.log(bod)
+
   });
   router.get("/getAll", async (ctx) => {
     let { data: account, error } = await supabase.from("account").select("*");
