@@ -86,47 +86,43 @@ const router = new Router();
       } else if (text == "6*1") {
         ctx.response.body = `CON Enter old pin
 `;
-      } 
-      else if(/6\*1\*[0-9]{4}/i.test(text) && text.split('*').length <= 3){
+      } else if (/6\*1\*[0-9]{4}/i.test(text) && text.split("*").length <= 3) {
         const { data: pin, error } = await supabase
-        .from("account")
-        .select("pin")
-        .eq("phone_number", phoneNumber.slice(-10));
+          .from("account")
+          .select("pin")
+          .eq("phone_number", phoneNumber.slice(-10));
 
-      console.log({ pin: pin[0].pin, error });
-      //Check if pin exists
-      if (pin[0].pin === text.split('*')[2]) {
-        ctx.response.body = `CON Enter new Pin
+        console.log({ pin: pin[0].pin, error });
+        //Check if pin exists
+        if (pin[0].pin === text.split("*")[2]) {
+          ctx.response.body = `CON Enter new Pin
                               `;
-      } else {
-        ctx.response.body = `END Incorrect Pin
+        } else {
+          ctx.response.body = `END Incorrect Pin
                                
       `;
-      }
-      }
-      else if(/6\*1\*[0-9]{4}\*[0-9]{4}/i.test(text) && text.split('*').length <= 4){
-      //Check if pin exists
+        }
+      } else if (
+        /6\*1\*[0-9]{4}\*[0-9]{4}/i.test(text) &&
+        text.split("*").length <= 4
+      ) {
+        //Check if pin exists
         ctx.response.body = `CON Enter New Pin again
                               `;
-      
-      }
-      else if(/6\*1\*[0-9]{4}\*[0-9]{4}\*[0-9]{4}/i.test(text)){
+      } else if (/6\*1\*[0-9]{4}\*[0-9]{4}\*[0-9]{4}/i.test(text)) {
         //Check if pin exists
-          if(text.split('*')[3] == text.split('*')[4]){
-            const { data, error } = await supabase
+        if (text.split("*")[3] == text.split("*")[4]) {
+          const { data, error } = await supabase
             .from("account")
             .update({ pin: text.split("*")[4] })
             .eq("phone_number", phoneNumber.slice(-10));
-            ctx.response.body = `END Pin Updated
+          ctx.response.body = `END Pin Updated
             `;
-          }else{
-            ctx.response.body = `END Pins don't match
+        } else {
+          ctx.response.body = `END Pins don't match
             `;
-          }
-
-        
         }
-      else if (text == "1*1" && isResgistered) {
+      } else if (text == "1*1" && isResgistered) {
         // Transfer Funds
         // Select current users pin
         const { data: pin, error } = await supabase
@@ -240,7 +236,8 @@ const router = new Router();
           .from("account")
           .select("pin")
           .eq("phone_number", phoneNumber.slice(-10));
-          if (text.split("*")[5] == String(pin[0].pin)) {8167000004
+        if (text.split("*")[5] == String(pin[0].pin)) {
+          8167000004;
 
           const { data, error } = await supabase
             .from("account")
@@ -259,11 +256,11 @@ const router = new Router();
             .from("account")
             .select("balance")
             .eq("phone_number", phoneNumber.slice(-10));
-          ctx.response.body = `END You Sent ₦${
-            text.split("*")[4]
-          }.00 to ${receiverName[0].name} ${
-            text.split("*")[2]
-          }. Your new balance is ₦${senderBalanceUp[0].balance}.00`;
+          ctx.response.body = `END You Sent ₦${text.split("*")[4]}.00 to ${
+            receiverName[0].name
+          } ${text.split("*")[2]}. Your new balance is ₦${
+            senderBalanceUp[0].balance
+          }.00`;
           console.log("sending");
         } else {
           ctx.response.body = `END Wrong Pin`;
@@ -310,9 +307,10 @@ const router = new Router();
       .eq("phone_number", phone_number);
     console.log({ data, error });
   });
-  router.get("/sendSMS", async(ctx)=>{
-    ctx.response.body = 'SMS sent'
-  })
+  router.get("/sendSMS", async (ctx) => {
+    ctx.response.type = "application/json";
+    ctx.response.body = { test: 1 };
+  });
   router.get("/getAll", async (ctx) => {
     let { data: account, error } = await supabase.from("account").select("*");
     console.log({ account });
