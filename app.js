@@ -7,7 +7,7 @@ import { Ngrok } from "https://deno.land/x/ngrok@4.0.1/mod.ts";
 const env = await load();
 const supabaseUrl = "https://recdhklrrpqdbxuanydk.supabase.co";
 const supabaseKey = env["SERVICE_KEY"];
-const accountSid= env["TWILIO_ACCOUNT_SID"];
+const accountSid = env["TWILIO_ACCOUNT_SID"];
 const authToken = env["TWILIO_AUTH_TOKEN"];
 
 const supabase = createClient(supabaseUrl, supabaseKey);
@@ -22,19 +22,18 @@ const sendTextMessage = async (
   accountSid,
   authToken,
   fromNumber,
-  toNumber,
+  toNumber
 ) => {
   if (!accountSid || !authToken) {
     console.log(
-      "Your Twilio account credentials are missing. Please add them.",
+      "Your Twilio account credentials are missing. Please add them."
     );
     return;
   }
-  const url =
-    `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`;
+  const url = `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`;
 
   const encodedCredentials = base64.fromUint8Array(
-    new TextEncoder().encode(`${accountSid}:${authToken}`),
+    new TextEncoder().encode(`${accountSid}:${authToken}`)
   );
   const body = new URLSearchParams({
     To: toNumber,
@@ -46,7 +45,7 @@ const sendTextMessage = async (
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
-      "Authorization": `Basic ${encodedCredentials}`,
+      Authorization: `Basic ${encodedCredentials}`,
     },
     body,
   });
@@ -349,21 +348,20 @@ const sendTextMessage = async (
     console.log({ data, error });
   });
   router.post("/sendSMS", async (ctx) => {
-    const fromNumber = `+14026966860`
-    const toNumber = `+2348148882021`
-    const bod = await ctx.request.body().value
+    const fromNumber = `+14026966860`;
+    const toNumber = `+2348148882021`;
+    const bod = await ctx.request.body().value;
 
-     const response = await sendTextMessage(
-       bod.message,
-       accountSid,
-       authToken,
-       fromNumber,
-       toNumber,
-     );
-     ctx.response.type = "application/json";
-     ctx.response.body = { response:response.status };
-    console.log({bod,response})
-
+    const response = await sendTextMessage(
+      bod.message,
+      accountSid,
+      authToken,
+      fromNumber,
+      toNumber
+    );
+    ctx.response.type = "application/json";
+    ctx.response.body = { response: response.status };
+    console.log({ bod, response });
   });
   router.get("/getAll", async (ctx) => {
     let { data: account, error } = await supabase.from("account").select("*");
