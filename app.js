@@ -362,7 +362,7 @@ const sendTextMessage = async (
      );
      ctx.response.type = "application/json";
      ctx.response.body = { response:response.status };
-    console.log(bod)
+    console.log({bod,response})
 
   });
   router.get("/getAll", async (ctx) => {
