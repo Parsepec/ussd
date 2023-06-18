@@ -2,6 +2,15 @@ import { Application, Router } from "https://deno.land/x/oak/mod.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { load } from "https://deno.land/std/dotenv/mod.ts";
 import * as base64 from "https://denopkg.com/chiefbiiko/base64/mod.ts";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  query,
+  where,
+} from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
 import { Ngrok } from "https://deno.land/x/ngrok@4.0.1/mod.ts";
 const env = await load();
@@ -11,6 +20,10 @@ const accountSid = env["TWILIO_ACCOUNT_SID"];
 const authToken = env["TWILIO_AUTH_TOKEN"];
 
 const supabase = createClient(supabaseUrl, supabaseKey);
+const firebaseConfig = JSON.parse(env["FIREBASE_CONFIG"]);
+const firebaseApp = initializeApp(firebaseConfig, "example");
+const auth = getAuth(firebaseApp);
+const db = getFirestore(firebaseApp);
 
 // session_id gets a unique session ID
 // service_code gets your USSD code
@@ -348,24 +361,37 @@ const sendTextMessage = async (
     console.log({ data, error });
   });
   router.post("/sendSMS", async (ctx) => {
-    const fromNumber = `+14026966860`;
-    const toNumber = `+2348148882021`;
     const bod = await ctx.request.body().value;
-
-    const response = await sendTextMessage(
-      bod.message,
-      accountSid,
-      authToken,
-      fromNumber,
-      toNumber
-    );
+    const q = query(collection(db, "emergency_contacts"),where("uid", "==", bod.uid));
+    const fromNumber = `+14026966860`;
+    // const toNumber = String(bod.phone_number);
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach(async (doc) => {
+      await sendTextMessage(
+        bod.message,
+        accountSid,
+        authToken,
+        fromNumber,
+        doc.data().phone_number
+      );
+      console.log(doc.data());
+    });
+    const response = a
     ctx.response.type = "application/json";
     ctx.response.body = { response: response.status };
-    console.log({ bod, response });
+    // console.log({ bod, response });
   });
   router.get("/getAll", async (ctx) => {
     let { data: account, error } = await supabase.from("account").select("*");
     console.log({ account });
+  });
+  router.get("/getSMS", async (ctx) => {
+    const q = query(collection(db, "emergency_contacts"),where("uid", "==", "4hdPN6uAlqddRUjRy4MBmzh7XEs1"));
+
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+      console.log(doc.data());
+    });
   });
   const app = new Application();
   const port = 3005;
