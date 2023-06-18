@@ -376,9 +376,9 @@ const sendTextMessage = async (
       );
       console.log(doc.data());
     });
-    const response = a
+  
     ctx.response.type = "application/json";
-    ctx.response.body = { response: response.status };
+    ctx.response.body = { response: 'sent' };
     // console.log({ bod, response });
   });
   router.get("/getAll", async (ctx) => {
