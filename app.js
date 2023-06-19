@@ -362,6 +362,7 @@ const sendTextMessage = async (
   });
   router.post("/sendSMS", async (ctx) => {
     const bod = await ctx.request.body().value;
+    console.log({bod})
     const q = query(collection(db, "emergency_contacts"),where("uid", "==", bod.uid));
     const fromNumber = `+14026966860`;
     // const toNumber = String(bod.phone_number);
