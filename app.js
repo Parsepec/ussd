@@ -367,7 +367,7 @@ const sendTextMessage = async (
     // const toNumber = String(bod.phone_number);
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach(async (doc) => {
-      const number = `+234${doc.data().phone_number.slice(1)} `
+      const number = `+234${doc.data().phone_number.slice(1)}`
       const res = await sendTextMessage(
         bod.message,
         accountSid,
