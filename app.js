@@ -374,7 +374,7 @@ const sendTextMessage = async (
         accountSid,
         authToken,
         fromNumber,
-        doc.data().phone_number
+        number
       );
       console.log(doc.data(),res);
     });
