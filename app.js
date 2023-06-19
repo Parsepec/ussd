@@ -368,14 +368,14 @@ const sendTextMessage = async (
     // const toNumber = String(bod.phone_number);
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach(async (doc) => {
-      await sendTextMessage(
+      const res = await sendTextMessage(
         bod.message,
         accountSid,
         authToken,
         fromNumber,
         doc.data().phone_number
       );
-      console.log(doc.data());
+      console.log(doc.data(),res);
     });
   
     ctx.response.type = "application/json";
