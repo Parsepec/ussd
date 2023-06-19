@@ -15,12 +15,11 @@ import {
 import { Ngrok } from "https://deno.land/x/ngrok@4.0.1/mod.ts";
 const env = await load();
 const supabaseUrl = "https://recdhklrrpqdbxuanydk.supabase.co";
-const supabaseKey = env["SERVICE_KEY"];
-const accountSid = env["TWILIO_ACCOUNT_SID"];
-const authToken = env["TWILIO_AUTH_TOKEN"];
-
+const supabaseKey = Deno.env.get("SERVICE_KEY");
+const accountSid = Deno.env.get("TWILIO_ACCOUNT_SID")
+const authToken = Deno.env.get("TWILIO_AUTH_TOKEN");
 const supabase = createClient(supabaseUrl, supabaseKey);
-const firebaseConfig = JSON.parse(env["FIREBASE_CONFIG"]);
+const firebaseConfig = JSON.parse(Deno.env.get("FIREBASE_CONFIG"));
 const firebaseApp = initializeApp(firebaseConfig, "example");
 const auth = getAuth(firebaseApp);
 const db = getFirestore(firebaseApp);
